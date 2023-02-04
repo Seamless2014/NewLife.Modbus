@@ -2,11 +2,11 @@
 
 namespace NewLife.IoT.Protocols;
 
-/// <summary>ModbusTCP网口通信</summary>
+/// <summary>ModbusUDP网口通信</summary>
 /// <remarks>
 /// ADU规定为256
 /// </remarks>
-public class ModbusTcp : ModbusIp
+public class ModbusUdp : ModbusIp
 {
     #region 属性
     /// <summary>协议标识。默认0</summary>

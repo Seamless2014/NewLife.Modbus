@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <Company>新生命开发团队</Company>
     <Copyright>©2002-2022 NewLife</Copyright>
     <VersionPrefix>1.0</VersionPrefix>
@@ -11,8 +11,10 @@
     <FileVersion>$(Version)</FileVersion>
     <AssemblyVersion>$(VersionPrefix).*</AssemblyVersion>
     <Deterministic>false</Deterministic>
-    <OutputPath>..\Bin\Test</OutputPath>
+    <OutputPath>..\Bin\WinModbus</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NewLife.ModbusRTU\NewLife.ModbusRTU.csproj" />
-    <ProjectReference Include="..\NewLife.Modbus\NewLife.Modbus.csproj" />
   </ItemGroup>
 
 </Project>

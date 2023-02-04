@@ -1,18 +1,13 @@
-﻿using System.IO.Ports;
+﻿using System.Diagnostics;
+using System.IO.Ports;
 using NewLife.Data;
-using NewLife.IoT.Protocols;
 using NewLife.IoT;
-using System.Diagnostics;
-using NewLife.Log;
-
-#if NETSTANDARD2_1_OR_GREATER
-using System.Buffers;
-#endif
+using NewLife.IoT.Protocols;
 
 namespace NewLife.Serial.Protocols;
 
 /// <summary>ModbusRTU串口通信</summary>
-public class ModbusRtu : Modbus
+public class ModbusAscii : Modbus
 {
     #region 属性
     /// <summary>端口</summary>
@@ -20,15 +15,6 @@ public class ModbusRtu : Modbus
 
     /// <summary>波特率</summary>
     public Int32 Baudrate { get; set; } = 9600;
-
-    /// <summary>数据位长度。默认8</summary>
-    public Int32 DataBits { get; set; } = 8;
-
-    /// <summary>奇偶校验位。默认None无校验</summary>
-    public Parity Parity { get; set; } = Parity.None;
-
-    /// <summary>停止位。默认One</summary>
-    public StopBits StopBits { get; set; } = StopBits.One;
 
     /// <summary>字节超时。数据包间隔，默认10ms</summary>
     public Int32 ByteTimeout { get; set; } = 10;
@@ -70,17 +56,13 @@ public class ModbusRtu : Modbus
         {
             var p = new SerialPort(PortName, Baudrate)
             {
-                DataBits = DataBits,
-                Parity = Parity,
-                StopBits = StopBits,
-
                 ReadTimeout = Timeout,
                 WriteTimeout = Timeout
             };
             p.Open();
             _port = p;
 
-            WriteLog("ModbusRtu.Open {0} Baudrate={1} DataBits={2} Parity={3} StopBits={4}", PortName, Baudrate, p.DataBits, p.Parity, p.StopBits);
+            WriteLog("ModbusAscii.Open {0} Baudrate={1} DataBits={2} Parity={3} StopBits={4}", PortName, Baudrate, p.DataBits, p.Parity, p.StopBits);
         }
     }
 
@@ -109,10 +91,10 @@ public class ModbusRtu : Modbus
 
         _port.Write(buf, 0, buf.Length);
 
-        if (ByteTimeout > 10) Thread.Sleep(ByteTimeout);
+        if (ByteTimeout > 0) Thread.Sleep(ByteTimeout);
 
         // 串口速度较慢，等待收完数据
-        WaitMore(_port, 1 + 1 + 2);
+        WaitMore(_port, 1 + 2 + 2 + 1 + 2);
 
         //using var span = Tracer?.NewSpan("modbus:ReceiveCommand");
         buf = new Byte[BufferSize];
@@ -132,7 +114,7 @@ public class ModbusRtu : Modbus
             var crc2 = buf.ToUInt16(len);
             if (crc != crc2) WriteLog("Crc Error {0:X4}!={1:X4} !", crc, crc2);
 
-            var rs = ModbusRtuMessage.Read(pk, true);
+            var rs = ModbusAsciiMessage.Read(pk, true);
             if (rs == null) return null;
 
             Log?.Debug("<= {0}", rs);
